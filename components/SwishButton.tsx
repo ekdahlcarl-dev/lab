@@ -1,16 +1,19 @@
 "use client";
 
-import { SwishPaymentService } from "@/services/payment/swishService";
-
 export default function SwishButton() {
   const handlePayment = async () => {
-    const service = new SwishPaymentService();
-
-    const result = await service.initiatePayment({
-      amount: 100,
-      currency: "SEK",
-      provider: "SWISH",
+    const response = await fetch("/api/payment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        amount: 100,
+        currency: "SEK",
+      }),
     });
+
+    const result = await response.json();
 
     alert(`Payment ${result.status}: ${result.transactionId}`);
   };
