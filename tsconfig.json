@@ -6,7 +6,6 @@
       "dom.iterable",
       "esnext"
     ],
-    
     "allowJs": true,
     "skipLibCheck": true,
     "strict": false,
@@ -18,11 +17,11 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
-    "baseUrl": ".",
-"paths": {
-  "@/*": ["./*"]
-},
-    
+    "paths": {
+      "@/*": [
+        "./*"
+      ]
+    },
     "plugins": [
       {
         "name": "next"

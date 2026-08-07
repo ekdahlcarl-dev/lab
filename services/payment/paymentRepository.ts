@@ -34,3 +34,5 @@ export class PaymentRepository {
     return payments;
   }
 }
+
+export const paymentRepository = new PaymentRepository();
