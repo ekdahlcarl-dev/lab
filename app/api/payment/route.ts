@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import { SwishPaymentService } from "@/services/payment/swishService";
-import { PaymentRepository } from "@/services/payment/paymentRepository";
-
-const repository = new PaymentRepository();
+import { paymentRepository } from "@/services/payment/paymentRepository";
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -15,7 +13,7 @@ export async function POST(request: Request) {
     provider: "SWISH",
   });
 
-  const storedPayment = repository.save({
+  const storedPayment = paymentRepository.save({
     ...result,
     id: crypto.randomUUID(),
     amount: body.amount,

@@ -3,9 +3,10 @@ import { paymentRepository } from "@/services/payment/paymentRepository";
 
 export async function GET(
   _request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
-  const payment = paymentRepository.get(params.id);
+  const { id } = await params;
+  const payment = paymentRepository.findById(id);
 
   if (!payment) {
     return NextResponse.json(

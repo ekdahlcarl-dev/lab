@@ -1,6 +1,6 @@
 import { PaymentProvider } from './PaymentProvider';
 import { Order } from '../../models/Order';
-import { Payment } from '../../models/Payment';
+import { Payment } from '../../models/payment';
 
 export class SwishProvider implements PaymentProvider {
   async createPayment(order: Order): Promise<Payment> {

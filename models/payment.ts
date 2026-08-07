@@ -13,3 +13,9 @@ export interface PaymentResult {
   provider: PaymentProviderName;
   transactionId?: string;
 }
+
+export interface Payment extends PaymentResult {
+  id: string;
+  amount: number;
+  currency: string;
+}
