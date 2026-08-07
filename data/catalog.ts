@@ -15,7 +15,7 @@ export const products: Product[] = [
     price: 149,
     currency: "SEK",
     categoryId: "coffee",
-    image: "☕",
+    image: "https://images.unsplash.com/photo-1447933601403-0c6688de566e?w=800",
     available: true,
   },
   {
@@ -25,7 +25,7 @@ export const products: Product[] = [
     price: 129,
     currency: "SEK",
     categoryId: "coffee",
-    image: "🫘",
+    image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=800",
     available: true,
   },
   {
@@ -35,7 +35,7 @@ export const products: Product[] = [
     price: 89,
     currency: "SEK",
     categoryId: "tea",
-    image: "🍵",
+    image: "https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=800",
     available: true,
   },
   {
@@ -45,7 +45,7 @@ export const products: Product[] = [
     price: 99,
     currency: "SEK",
     categoryId: "accessories",
-    image: "🥤",
+    image: "https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?w=800",
     available: true,
   },
 ];
