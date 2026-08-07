@@ -2,7 +2,34 @@ import Link from "next/link";
 import ProductCard from "@/components/ProductCard";
 import { categories, products } from "@/data/catalog";
 
-export default function ProductsPage() {
+interface ProductsPageProps {
+  searchParams: Promise<{
+    q?: string;
+    category?: string;
+    sort?: string;
+  }>;
+}
+
+export default async function ProductsPage({ searchParams }: ProductsPageProps) {
+  const params = await searchParams;
+  const query = params.q?.toLowerCase() ?? "";
+  const category = params.category ?? "";
+
+  const filteredProducts = products
+    .filter((product) => {
+      const matchesQuery =
+        !query ||
+        product.name.toLowerCase().includes(query) ||
+        product.description.toLowerCase().includes(query);
+      const matchesCategory = !category || product.categoryId === category;
+      return matchesQuery && matchesCategory;
+    })
+    .sort((a, b) => {
+      if (params.sort === "price-asc") return a.price - b.price;
+      if (params.sort === "price-desc") return b.price - a.price;
+      return 0;
+    });
+
   return (
     <main className="min-h-screen bg-slate-50">
       <header className="border-b border-slate-200 bg-white">
@@ -10,37 +37,38 @@ export default function ProductsPage() {
           <Link href="/products" className="text-xl font-bold tracking-tight text-slate-950">
             Lab Store
           </Link>
-          <Link
-            href="/cart"
-            className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-900 transition hover:bg-slate-50"
-          >
+          <Link href="/cart" className="rounded-full border border-slate-300 px-4 py-2 text-sm font-medium text-slate-900">
             Cart (0)
           </Link>
         </div>
       </header>
 
-      <section className="mx-auto max-w-6xl px-6 py-12 sm:py-16">
-        <div className="max-w-2xl">
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-slate-500">Shop</p>
-          <h1 className="mt-3 text-4xl font-bold tracking-tight text-slate-950 sm:text-5xl">
-            Products for your daily ritual
-          </h1>
-          <p className="mt-5 text-lg leading-8 text-slate-600">
-            Browse the current collection. Product data is already separated from the UI so it can be moved to a database in the next stage.
-          </p>
-        </div>
+      <section className="mx-auto max-w-6xl px-6 py-12">
+        <h1 className="text-4xl font-bold text-slate-950">Products for your daily ritual</h1>
 
-        <div className="mt-10 flex flex-wrap gap-2">
-          <span className="rounded-full bg-slate-950 px-4 py-2 text-sm font-medium text-white">All products</span>
-          {categories.map((category) => (
-            <span key={category.id} className="rounded-full border border-slate-300 bg-white px-4 py-2 text-sm text-slate-700">
-              {category.name}
-            </span>
-          ))}
-        </div>
+        <form className="mt-8 grid gap-4 rounded-2xl bg-white p-5 shadow-sm sm:grid-cols-3">
+          <input
+            name="q"
+            defaultValue={params.q}
+            placeholder="Search products..."
+            className="rounded-lg border border-slate-300 px-4 py-2"
+          />
+          <select name="category" defaultValue={params.category} className="rounded-lg border border-slate-300 px-4 py-2">
+            <option value="">All categories</option>
+            {categories.map((item) => (
+              <option key={item.id} value={item.id}>{item.name}</option>
+            ))}
+          </select>
+          <select name="sort" defaultValue={params.sort} className="rounded-lg border border-slate-300 px-4 py-2">
+            <option value="">Sort</option>
+            <option value="price-asc">Price low to high</option>
+            <option value="price-desc">Price high to low</option>
+          </select>
+          <button className="rounded-lg bg-slate-950 px-4 py-2 text-white sm:col-span-3">Apply</button>
+        </form>
 
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {products.map((product) => (
+        <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>
