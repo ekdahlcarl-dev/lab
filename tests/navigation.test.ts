@@ -12,8 +12,9 @@ describe("storefront navigation", () => {
     expect(read("app/checkout/page.tsx")).toContain('href="/cart"');
   });
 
-  it("uses the current cart total when starting payment", () => {
-    expect(read("app/checkout/page.tsx")).toContain("<SwishButton amount={total} />");
-    expect(read("components/SwishButton.tsx")).toContain("amount,");
+  it("uses the current order total when starting payment", () => {
+    const checkout = read("app/checkout/page.tsx");
+    expect(checkout).toContain("const orderTotal = total + deliveryCost");
+    expect(checkout).toContain('JSON.stringify({ amount: orderTotal, currency: "SEK" })');
   });
 });
