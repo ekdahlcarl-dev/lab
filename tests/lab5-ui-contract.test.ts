@@ -6,15 +6,16 @@ function read(path: string) {
 }
 
 describe("LAB-5 UI acceptance contract", () => {
-  it("routes the application entry point to the product catalog", () => {
+  it("provides a clear path from the application entry point to the product catalog", () => {
     const home = read("app/page.tsx");
-    expect(home).toContain('redirect("/products")');
+    expect(home).toContain('href="/products"');
+    expect(home).toContain("products.slice");
   });
 
   it("renders the catalog from shared product data", () => {
     const catalogPage = read("app/products/page.tsx");
     expect(catalogPage).toContain('from "@/data/catalog"');
-    expect(catalogPage).toContain("products.map");
+    expect(catalogPage).toContain("filteredProducts.map");
     expect(catalogPage).toContain("ProductCard");
   });
 
