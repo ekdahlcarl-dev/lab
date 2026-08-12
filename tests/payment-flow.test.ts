@@ -26,10 +26,10 @@ describe("payment lifecycle", () => {
       transactionId: "SWISH-test",
       amount: 100,
       currency: "SEK",
-      createdAt: new Date().toISOString(),
     });
 
     expect(payment.status).toBe("PENDING");
+    expect(payment.createdAt).toBeTruthy();
 
     const updated = repository.updateStatus("test-payment", "COMPLETED");
 
