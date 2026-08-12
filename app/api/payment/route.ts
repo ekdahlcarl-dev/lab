@@ -1,25 +1,29 @@
 import { NextResponse } from "next/server";
-import { SwishPaymentService } from "@/services/payment/swishService";
-import { paymentRepository } from "@/services/payment/paymentRepository";
+import type { PaymentProviderName } from "@/models/payment";
+import { GenericPaymentService } from "@/services/payment/paymentService";
 
 export async function POST(request: Request) {
-  const body = await request.json();
+  try {
+    const body = await request.json();
+    const provider = String(body.provider ?? "SWISH").toUpperCase() as PaymentProviderName;
+    const amount = Number(body.amount);
 
-  const service = new SwishPaymentService();
+    if (!Number.isFinite(amount) || amount <= 0) {
+      return NextResponse.json({ error: "A positive payment amount is required" }, { status: 400 });
+    }
 
-  const result = await service.initiatePayment({
-    amount: body.amount,
-    currency: body.currency ?? "SEK",
-    provider: "SWISH",
-  });
+    const service = new GenericPaymentService();
+    const payment = await service.initiatePayment({
+      amount,
+      currency: body.currency ?? "SEK",
+      provider,
+    });
 
-  const storedPayment = paymentRepository.save({
-    ...result,
-    id: crypto.randomUUID(),
-    amount: body.amount,
-    currency: body.currency ?? "SEK",
-    createdAt: new Date().toISOString(),
-  });
-
-  return NextResponse.json(storedPayment);
+    return NextResponse.json(payment, { status: 201 });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Could not initiate payment" },
+      { status: 502 }
+    );
+  }
 }
