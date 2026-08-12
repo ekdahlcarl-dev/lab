@@ -51,7 +51,7 @@ describe("LAB-7 checkout", () => {
 
   it("submits the real order total and reports errors", () => {
     const checkout = read("app/checkout/page.tsx");
-    expect(checkout).toContain("JSON.stringify({ amount: orderTotal, currency: \"SEK\" })");
+    expect(checkout).toContain('amount: orderTotal, currency: "SEK", provider: "SWISH"');
     expect(checkout).toContain("Payment request failed.");
     expect(checkout).toContain("Could not place the order.");
   });
