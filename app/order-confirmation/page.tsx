@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 
 type Confirmation = {
   orderId: string;
@@ -14,6 +14,14 @@ type Confirmation = {
 };
 
 export default function OrderConfirmationPage() {
+  return (
+    <Suspense fallback={<StateCard title="Checking payment status…" detail="Loading your order." />}>
+      <OrderConfirmationContent />
+    </Suspense>
+  );
+}
+
+function OrderConfirmationContent() {
   const params = useSearchParams();
   const orderId = params.get("orderId");
   const [order, setOrder] = useState<Confirmation | null>(null);
