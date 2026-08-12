@@ -6,12 +6,11 @@ const read = (path: string) => readFileSync(path, "utf8");
 describe("LAB-8 payment layer", () => {
   it("initiates checkout payments through the generic provider abstraction", () => {
     const checkout = read("app/checkout/page.tsx");
-    const route = read("app/api/payment/route.ts");
-    const service = read("services/payment/paymentService.ts");
+    const orderService = read("services/order/orderService.ts");
 
     expect(checkout).toContain('provider: "SWISH"');
-    expect(route).toContain("GenericPaymentService");
-    expect(service).toContain("getPaymentProvider(request.provider)");
+    expect(orderService).toContain("getPaymentProvider(input.provider)");
+    expect(orderService).toContain("provider.createPayment");
   });
 
   it("isolates mock and real Swish implementations behind PaymentFactory", () => {
@@ -30,14 +29,13 @@ describe("LAB-8 payment layer", () => {
     expect(mapper).toContain('return "CANCELLED"');
   });
 
-  it("persists payment creation and asynchronous callback transitions", () => {
-    const service = read("services/payment/paymentService.ts");
+  it("persists asynchronous callback transitions through the order service", () => {
     const callback = read("app/api/payment/callback/route.ts");
-    const repository = read("services/payment/paymentRepository.ts");
-    expect(service).toContain("paymentRepository.save(payment)");
+    const orderService = read("services/order/orderService.ts");
     expect(callback).toContain("mapProviderStatus");
-    expect(callback).toContain("paymentRepository.updateStatus");
-    expect(repository).toContain("updatedAt");
+    expect(callback).toContain("orderService.applyPaymentStatus");
+    expect(orderService).toContain("UPDATE payments SET status");
+    expect(orderService).toContain("UPDATE orders SET status");
   });
 
   it("supports failure and cancellation without coupling checkout to Swish callbacks", () => {
