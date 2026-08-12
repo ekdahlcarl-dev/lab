@@ -1,6 +1,10 @@
 "use client";
 
-export default function SwishButton() {
+interface SwishButtonProps {
+  amount: number;
+}
+
+export default function SwishButton({ amount }: SwishButtonProps) {
   const handlePayment = async () => {
     const response = await fetch("/api/payment", {
       method: "POST",
@@ -8,12 +12,17 @@ export default function SwishButton() {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        amount: 100,
+        amount,
         currency: "SEK",
       }),
     });
 
     const result = await response.json();
+
+    if (!response.ok) {
+      alert(result.error ?? "Payment could not be started.");
+      return;
+    }
 
     alert(`Payment ${result.status}: ${result.transactionId}`);
   };
@@ -21,9 +30,10 @@ export default function SwishButton() {
   return (
     <button
       onClick={handlePayment}
-      className="w-full bg-green-600 text-white rounded-xl py-3 font-semibold"
+      disabled={amount <= 0}
+      className="w-full rounded-xl bg-green-600 py-3 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-50"
     >
-      Pay with Swish
+      Pay {amount} SEK with Swish
     </button>
   );
 }
