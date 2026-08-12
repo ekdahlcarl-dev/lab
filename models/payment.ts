@@ -1,4 +1,4 @@
-export type PaymentStatus = "PENDING" | "COMPLETED" | "FAILED";
+export type PaymentStatus = "PENDING" | "COMPLETED" | "FAILED" | "CANCELLED";
 
 export type PaymentProviderName = "SWISH" | "CARD";
 
