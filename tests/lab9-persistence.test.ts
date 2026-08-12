@@ -36,8 +36,9 @@ describe("LAB-9 orders and persistence", () => {
     const service = read("services/order/orderService.ts");
     expect(schema).toContain("provider_event_id text NOT NULL UNIQUE");
     expect(service).toContain("ON CONFLICT (provider_event_id) DO NOTHING");
-    expect(service).toContain('status === "COMPLETED" ? "paid"');
-    expect(service).toContain('status === "CANCELLED" ? "cancelled"');
+    expect(service).toContain('if (status === "COMPLETED") return "paid"');
+    expect(service).toContain('if (status === "FAILED") return "payment_failed"');
+    expect(service).toContain('if (status === "CANCELLED") return "cancelled"');
   });
 
   it("routes checkout through the transactional order API", () => {

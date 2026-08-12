@@ -87,7 +87,7 @@ export default function CheckoutPage() {
         });
         const order = await response.json();
         if (!response.ok) throw new Error(order.error ?? "Order/payment request failed.");
-        setResult(`Order ${order.orderId} ready. Payment ${order.paymentStatus}: ${order.transactionId ?? order.paymentId}`);
+        window.location.assign(`/order-confirmation?orderId=${order.orderId}`);
       } else {
         setResult("Order ready. Invoice payment selected.");
       }
