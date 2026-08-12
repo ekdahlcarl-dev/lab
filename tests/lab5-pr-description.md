@@ -1,1 +1,0 @@
-LAB-5 validation branch adds explicit foundation acceptance tests and CI that runs both the test suite and production build on pull requests and pushes to main.
