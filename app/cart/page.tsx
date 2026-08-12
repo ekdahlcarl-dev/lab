@@ -19,7 +19,13 @@ export default function CartPage() {
                 <p>{item.price} {item.currency}</p>
               </div>
               <div className="flex items-center gap-3">
-                <input className="w-16 border rounded p-1" type="number" value={item.quantity} onChange={(e) => updateQuantity(item.id, Number(e.target.value))} />
+                <input
+                  className="w-16 rounded border p-1"
+                  type="number"
+                  min={1}
+                  value={item.quantity}
+                  onChange={(e) => updateQuantity(item.id, Number(e.target.value))}
+                />
                 <button onClick={() => removeFromCart(item.id)}>Remove</button>
               </div>
             </div>
@@ -27,7 +33,15 @@ export default function CartPage() {
         </div>
 
         <p className="mt-8 text-xl font-bold">Total: {total} SEK</p>
-        <Link className="mt-6 inline-block" href="/products">Continue shopping</Link>
+        <div className="mt-6 flex flex-wrap gap-4">
+          <Link className="inline-block" href="/products">Continue shopping</Link>
+          <Link
+            className="inline-block rounded-lg bg-slate-950 px-5 py-3 font-semibold text-white"
+            href="/checkout"
+          >
+            Proceed to checkout
+          </Link>
+        </div>
       </div>
     </main>
   );
