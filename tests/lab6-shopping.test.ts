@@ -23,7 +23,7 @@ describe("LAB-6 shopping experience", () => {
 
   it("supports cart add/remove/update, totals and session persistence", () => {
     const cartProvider = read("components/CartProvider.tsx");
-    expect(cartProvider).toContain("existing.quantity + 1");
+    expect(cartProvider).toContain("item.quantity + 1");
     expect(cartProvider).toContain("removeFromCart");
     expect(cartProvider).toContain("updateQuantity");
     expect(cartProvider).toContain("item.price * item.quantity");
