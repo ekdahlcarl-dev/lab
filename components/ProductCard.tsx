@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import type { Product } from "@/models/Product";
 import { useCart } from "@/components/CartProvider";
@@ -15,8 +14,13 @@ export default function ProductCard({ product }: ProductCardProps) {
   return (
     <article className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
       <Link href={`/products/${product.id}`} className="block">
-        <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
-          <Image src={product.image} alt={product.name} fill className="object-cover transition duration-300 group-hover:scale-105" sizes="(max-width: 768px) 100vw, 33vw" />
+        <div className="aspect-[4/3] overflow-hidden bg-slate-100">
+          <img
+            src={product.image}
+            alt={product.name}
+            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+            loading="lazy"
+          />
         </div>
         <div className="p-5">
           <h2 className="font-semibold text-slate-900">{product.name}</h2>
