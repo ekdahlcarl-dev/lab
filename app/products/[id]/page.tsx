@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import AddToCartButton from "@/components/AddToCartButton";
@@ -24,8 +25,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
   return (
     <main className="min-h-screen bg-slate-50">
       <section className="mx-auto grid max-w-6xl gap-10 px-6 py-12 lg:grid-cols-2 lg:py-20">
-        <div className="flex min-h-[420px] items-center justify-center rounded-3xl bg-slate-100 text-9xl shadow-sm">
-          <span aria-hidden="true">{product.image}</span>
+        <div className="relative min-h-[420px] overflow-hidden rounded-3xl bg-slate-100 shadow-sm">
+          <Image
+            src={product.image}
+            alt={product.name}
+            fill
+            priority
+            className="object-cover"
+            sizes="(max-width: 1024px) 100vw, 50vw"
+          />
         </div>
 
         <div className="flex flex-col justify-center">
