@@ -4,34 +4,23 @@ import Link from "next/link";
 import type { Product } from "@/models/Product";
 import { useCart } from "@/components/CartProvider";
 
-interface ProductCardProps {
-  product: Product;
-}
-
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product }: { product: Product }) {
   const { addToCart } = useCart();
-
   return (
-    <article className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
-      <Link href={`/products/${product.id}`} className="block">
-        <div className="aspect-[4/3] overflow-hidden bg-slate-100">
-          <img
-            src={product.image}
-            alt={product.name}
-            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-            loading="lazy"
-          />
-        </div>
-        <div className="p-5">
-          <h2 className="font-semibold text-slate-900">{product.name}</h2>
-          <p className="mt-2 font-semibold">{product.price} {product.currency}</p>
+    <article className="group relative">
+      <div className="relative overflow-hidden rounded-[18px] bg-[#efeee8]">
+        <Link href={`/products/${product.id}`} className="block aspect-[4/5]">
+          <img src={product.image} alt={product.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]" loading="lazy" />
+        </Link>
+        <button type="button" aria-label={`Save ${product.name} to wishlist`} className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-lg shadow-sm hover:bg-white">♡</button>
+        <button type="button" onClick={() => addToCart(product)} className="absolute inset-x-3 bottom-3 translate-y-14 rounded-full bg-[#173f35] px-4 py-2.5 text-sm font-semibold text-white opacity-0 transition group-hover:translate-y-0 group-hover:opacity-100 focus:translate-y-0 focus:opacity-100">Add to cart</button>
+      </div>
+      <Link href={`/products/${product.id}`} className="mt-4 block">
+        <div className="flex items-start justify-between gap-3">
+          <div><h2 className="font-medium text-stone-950">{product.name}</h2><p className="mt-1 text-sm text-stone-500">★★★★★ <span className="sr-only">5 out of 5 stars</span></p></div>
+          <p className="whitespace-nowrap font-semibold text-stone-900">{product.price} {product.currency}</p>
         </div>
       </Link>
-      <div className="px-5 pb-5">
-        <button onClick={() => addToCart(product)} className="w-full rounded-full bg-slate-950 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800">
-          Add to cart
-        </button>
-      </div>
     </article>
   );
 }
