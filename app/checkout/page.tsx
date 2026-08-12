@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import { FormEvent, useRef, useState } from "react";
 import { useCart } from "@/components/CartProvider";
 import PaymentSelector, { type PaymentMethod } from "@/components/PaymentSelector";
 
@@ -34,6 +34,7 @@ export default function CheckoutPage() {
   const [errors, setErrors] = useState<FieldErrors>({});
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<string | null>(null);
+  const idempotencyKey = useRef(crypto.randomUUID());
 
   const deliveryCost = fields.deliveryMethod === "express" ? 79 : 39;
   const orderTotal = total + deliveryCost;
@@ -63,14 +64,30 @@ export default function CheckoutPage() {
     setSubmitting(true);
     try {
       if (paymentMethod === "swish") {
-        const response = await fetch("/api/payment", {
+        const response = await fetch("/api/orders", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ amount: orderTotal, currency: "SEK", provider: "SWISH" }),
+          headers: {
+            "Content-Type": "application/json",
+            "Idempotency-Key": idempotencyKey.current,
+          },
+          body: JSON.stringify({
+            customer: {
+              name: fields.name,
+              email: fields.email,
+              phone: fields.phone,
+              address: fields.address,
+              postalCode: fields.postalCode,
+              city: fields.city,
+            },
+            items,
+            amount: orderTotal,
+            currency: "SEK",
+            provider: "SWISH",
+          }),
         });
-        const payment = await response.json();
-        if (!response.ok) throw new Error(payment.error ?? "Payment request failed.");
-        setResult(`Order ready. Payment ${payment.status}: ${payment.transactionId ?? payment.id}`);
+        const order = await response.json();
+        if (!response.ok) throw new Error(order.error ?? "Order/payment request failed.");
+        setResult(`Order ${order.orderId} ready. Payment ${order.paymentStatus}: ${order.transactionId ?? order.paymentId}`);
       } else {
         setResult("Order ready. Invoice payment selected.");
       }
