@@ -1,12 +1,10 @@
-import { PaymentRequest, PaymentResult } from "@/models/payment";
-import { PaymentService } from "./paymentService";
+import type { Payment, PaymentRequest } from "@/models/payment";
+import { GenericPaymentService, type PaymentService } from "./paymentService";
 
 export class SwishPaymentService implements PaymentService {
-  async initiatePayment(request: PaymentRequest): Promise<PaymentResult> {
-    return {
-      status: "PENDING",
-      provider: "SWISH",
-      transactionId: `SWISH-${Date.now()}`,
-    };
+  private readonly service = new GenericPaymentService();
+
+  async initiatePayment(request: PaymentRequest): Promise<Payment> {
+    return this.service.initiatePayment({ ...request, provider: "SWISH" });
   }
 }
