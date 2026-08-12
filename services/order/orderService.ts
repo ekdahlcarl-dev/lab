@@ -12,7 +12,21 @@ export type CreateOrderInput = {
   idempotencyKey: string;
 };
 
-const memoryOrders = new Map<string, PersistedCheckout>();
+export type OrderConfirmation = PersistedCheckout & {
+  orderStatus: "pending_payment" | "paid" | "payment_failed" | "cancelled";
+  amount?: number;
+  currency?: string;
+  customerEmail?: string;
+};
+
+const memoryOrders = new Map<string, OrderConfirmation>();
+
+function orderStatusForPayment(status: PaymentStatus): OrderConfirmation["orderStatus"] {
+  if (status === "COMPLETED") return "paid";
+  if (status === "FAILED") return "payment_failed";
+  if (status === "CANCELLED") return "cancelled";
+  return "pending_payment";
+}
 
 export class OrderService {
   async createOrderAndPayment(input: CreateOrderInput): Promise<PersistedCheckout> {
@@ -57,9 +71,48 @@ export class OrderService {
     const existing = memoryOrders.get(input.idempotencyKey);
     if (existing) return existing;
     const payment = await getPaymentProvider(input.provider).createPayment({ amount: input.amount, currency: input.currency, provider: input.provider });
-    const result = { orderId: randomUUID(), paymentId: payment.id, paymentStatus: payment.status, transactionId: payment.transactionId };
+    const result: OrderConfirmation = {
+      orderId: randomUUID(),
+      paymentId: payment.id,
+      paymentStatus: payment.status,
+      transactionId: payment.transactionId,
+      orderStatus: orderStatusForPayment(payment.status),
+      amount: input.amount,
+      currency: input.currency,
+      customerEmail: input.customer.email,
+    };
     memoryOrders.set(input.idempotencyKey, result);
     return result;
+  }
+
+  async getOrderConfirmation(orderId: string): Promise<OrderConfirmation | null> {
+    if (!pool) {
+      for (const order of memoryOrders.values()) if (order.orderId === orderId) return order;
+      return null;
+    }
+
+    const result = await pool.query(
+      `SELECT o.id AS order_id, o.status AS order_status, o.amount, o.currency,
+              c.email AS customer_email, p.id AS payment_id, p.status AS payment_status,
+              p.provider_transaction_id
+         FROM orders o
+         JOIN customers c ON c.id = o.customer_id
+         JOIN payments p ON p.order_id = o.id
+        WHERE o.id = $1`,
+      [orderId]
+    );
+    if (!result.rowCount) return null;
+    const row = result.rows[0];
+    return {
+      orderId: row.order_id,
+      orderStatus: row.order_status,
+      amount: Number(row.amount),
+      currency: row.currency,
+      customerEmail: row.customer_email,
+      paymentId: row.payment_id,
+      paymentStatus: row.payment_status,
+      transactionId: row.provider_transaction_id ?? undefined,
+    };
   }
 
   async applyPaymentStatus(paymentReference: string, status: PaymentStatus, providerEventId: string): Promise<PersistedCheckout | null> {
@@ -67,6 +120,7 @@ export class OrderService {
       for (const value of memoryOrders.values()) {
         if (value.paymentId === paymentReference || value.transactionId === paymentReference) {
           value.paymentStatus = status;
+          value.orderStatus = orderStatusForPayment(status);
           return value;
         }
       }
@@ -86,8 +140,7 @@ export class OrderService {
       );
       if (event.rowCount) {
         await client.query(`UPDATE payments SET status=$2,updated_at=now() WHERE id=$1`, [payment.id, status]);
-        const orderStatus = status === "COMPLETED" ? "paid" : status === "CANCELLED" ? "cancelled" : "pending_payment";
-        await client.query(`UPDATE orders SET status=$2,updated_at=now() WHERE id=$1`, [payment.order_id, orderStatus]);
+        await client.query(`UPDATE orders SET status=$2,updated_at=now() WHERE id=$1`, [payment.order_id, orderStatusForPayment(status)]);
       }
       return { orderId: payment.order_id, paymentId: payment.id, paymentStatus: status, transactionId: payment.provider_transaction_id ?? undefined };
     });
