@@ -15,6 +15,6 @@ describe("storefront navigation", () => {
   it("uses the current order total when starting payment", () => {
     const checkout = read("app/checkout/page.tsx");
     expect(checkout).toContain("const orderTotal = total + deliveryCost");
-    expect(checkout).toContain('JSON.stringify({ amount: orderTotal, currency: "SEK" })');
+    expect(checkout).toContain('amount: orderTotal, currency: "SEK", provider: "SWISH"');
   });
 });
