@@ -1,20 +1,25 @@
 import { NextResponse } from "next/server";
-import { paymentRepository } from "@/services/payment/paymentRepository";
 import { mapProviderStatus } from "@/services/payment/paymentStatus";
+import { orderService } from "@/services/order/orderService";
 
 export async function POST(request: Request) {
   const body = await request.json();
-  const id = body.id ?? body.payeePaymentReference ?? body.paymentReference;
+  const reference = body.id ?? body.payeePaymentReference ?? body.paymentReference;
+  const providerEventId = body.eventId ?? body.callbackId ?? `${reference}:${body.status ?? "PENDING"}`;
 
-  if (!id) {
+  if (!reference) {
     return NextResponse.json({ error: "Payment id is required" }, { status: 400 });
   }
 
-  const payment = paymentRepository.updateStatus(id, mapProviderStatus(body.status ?? "PENDING"));
+  const result = await orderService.applyPaymentStatus(
+    String(reference),
+    mapProviderStatus(body.status ?? "PENDING"),
+    String(providerEventId)
+  );
 
-  if (!payment) {
+  if (!result) {
     return NextResponse.json({ error: "Payment not found" }, { status: 404 });
   }
 
-  return NextResponse.json(payment);
+  return NextResponse.json(result);
 }
