@@ -13,3 +13,16 @@ First version based on the approved stack:
 npm install
 npm run dev
 ```
+
+## Validate
+
+```bash
+npm test
+npm run build
+```
+
+GitHub Actions runs the same test and build checks for pull requests and pushes to `main`.
+
+## LAB-5 foundation
+
+The webshop foundation includes domain models for products, categories, customers, carts, and orders; catalog data separated from UI code; product catalog and product detail pages; and the application entry point leading to the catalog.
