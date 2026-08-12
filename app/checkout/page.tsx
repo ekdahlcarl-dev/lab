@@ -66,11 +66,11 @@ export default function CheckoutPage() {
         const response = await fetch("/api/payment", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ amount: orderTotal, currency: "SEK" }),
+          body: JSON.stringify({ amount: orderTotal, currency: "SEK", provider: "SWISH" }),
         });
-        if (!response.ok) throw new Error("Payment request failed.");
         const payment = await response.json();
-        setResult(`Order ready. Payment ${payment.status}: ${payment.transactionId}`);
+        if (!response.ok) throw new Error(payment.error ?? "Payment request failed.");
+        setResult(`Order ready. Payment ${payment.status}: ${payment.transactionId ?? payment.id}`);
       } else {
         setResult("Order ready. Invoice payment selected.");
       }
