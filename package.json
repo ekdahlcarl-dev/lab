@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "test": "vitest run",
+    "check:config": "node scripts/check-config.mjs",
+    "quality": "npm run check:config && npm test && npm run build",
     "db:migrate": "node scripts/migrate.mjs",
     "db:seed": "node scripts/seed-products.mjs"
   },

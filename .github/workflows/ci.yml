@@ -4,9 +4,13 @@ on:
   pull_request:
   push:
 
+permissions:
+  contents: read
+
 jobs:
   test-and-build:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v5
@@ -19,8 +23,21 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
+      - name: Validate runtime configuration
+        run: npm run check:config
+        env:
+          PAYMENT_MODE: mock
+
       - name: Run tests
         run: npm test
 
       - name: Build application
         run: npm run build
+
+      - name: Reject committed secret files
+        shell: bash
+        run: |
+          if git ls-files | grep -E '(^|/)(\.env($|\.)|.*\.(pem|key|p12|pfx)$|secrets/|certs/)' | grep -v '^\.env\.example$'; then
+            echo 'Secret-like files must not be committed.'
+            exit 1
+          fi
