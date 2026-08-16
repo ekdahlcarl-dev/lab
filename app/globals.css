@@ -19,9 +19,16 @@ body {
   background: var(--canvas);
   color: var(--ink);
   font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 ::selection { background: #dce8df; }
 a, button, input, select { outline-offset: 3px; }
 a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible { outline: 2px solid var(--forest); }
 button, select { cursor: pointer; }
+
+/* Keep adjacent text links visually distinct even when a component forgets a gap utility. */
+nav a + a,
+.inline-links a + a {
+  margin-inline-start: 0.5rem;
+}
