@@ -43,8 +43,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: npm
-          cache-dependency-path: orbit/package-lock.json
       - name: Install dependencies
         run: npm install --package-lock-only && npm ci
       - name: Apply database migrations
