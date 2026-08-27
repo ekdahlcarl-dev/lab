@@ -17,3 +17,4 @@ secrets/
 # Logs and local artifacts
 *.log
 coverage/
+*.tsbuildinfo

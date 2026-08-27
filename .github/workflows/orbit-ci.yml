@@ -44,8 +44,10 @@ jobs:
         with:
           node-version: 20
       - name: Install dependencies
-        run: npm install --package-lock-only && npm ci
+        run: npm ci
       - name: Apply database migrations
+        run: npm run db:migrate
+      - name: Verify migration replay is safe
         run: npm run db:migrate
       - name: Unit tests
         run: npm test
