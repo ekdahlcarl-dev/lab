@@ -37,7 +37,7 @@ jobs:
       - name: Reject committed secret files
         shell: bash
         run: |
-          if git ls-files | grep -E '(^|/)(\.env($|\.)|.*\.(pem|key|p12|pfx)$|secrets/|certs/)' | grep -v '^\.env\.example$'; then
+          if git ls-files | grep -E '(^|/)(\.env($|\.)|.*\.(pem|key|p12|pfx)$|secrets/|certs/)' | grep -v -E '(^|/)\.env\.example$'; then
             echo 'Secret-like files must not be committed.'
             exit 1
           fi
