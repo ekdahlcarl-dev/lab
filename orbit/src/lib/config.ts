@@ -10,8 +10,9 @@ const serverSchema = z.object({
 });
 
 export type ServerConfig = z.infer<typeof serverSchema>;
+export type EnvironmentInput = Record<string, string | undefined>;
 
-export function parseServerConfig(env: NodeJS.ProcessEnv): ServerConfig {
+export function parseServerConfig(env: EnvironmentInput): ServerConfig {
   return serverSchema.parse(env);
 }
 
