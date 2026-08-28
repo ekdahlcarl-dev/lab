@@ -1,5 +1,9 @@
 # Payment Checkout App
 
+## ORBIT has moved
+
+ORBIT now lives in its own repository: [ekdahlcarl-dev/orbit](https://github.com/ekdahlcarl-dev/orbit). Create ORBIT Codespaces and run its CI from that repository. The former `orbit/` directory and ORBIT-only CI/devcontainer configuration have been removed here after verifying the migrated repository. The original history remains available in LAB.
+
 First version based on the approved stack:
 
 - Next.js + React + TypeScript
